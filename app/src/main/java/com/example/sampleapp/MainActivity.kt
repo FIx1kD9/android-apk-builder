@@ -1,29 +1,54 @@
 package com.example.sampleapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
-    private var clickCount = 0
+
+    private var clicks = 0
+    private var clickPower = 1
+    private var upgradeCost = 10
+    private lateinit var scoreText: TextView
+    private lateinit var upgradeButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val welcomeText = findViewById<TextView>(R.id.welcomeText)
+        scoreText = findViewById(R.id.scoreText)
+        upgradeButton = findViewById(R.id.upgradeButton)
         val clickButton = findViewById<Button>(R.id.clickButton)
-        val countText = findViewById<TextView>(R.id.countText)
+        val resetButton = findViewById<Button>(R.id.resetButton)
+
+        updateUI()
 
         clickButton.setOnClickListener {
-            clickCount++
-            countText.text = "Button clicked $clickCount times"
-            
-            if (clickCount % 5 == 0) {
-                Toast.makeText(this, "Wow! You've clicked $clickCount times!", Toast.LENGTH_SHORT).show()
+            clicks += clickPower
+            updateUI()
+        }
+
+        upgradeButton.setOnClickListener {
+            if (clicks >= upgradeCost) {
+                clicks -= upgradeCost
+                clickPower += 1
+                upgradeCost = (upgradeCost * 1.5).toInt()
+                updateUI()
             }
         }
+
+        resetButton.setOnClickListener {
+            clicks = 0
+            clickPower = 1
+            upgradeCost = 10
+            updateUI()
+        }
+    }
+
+    private fun updateUI() {
+        scoreText.text = "Кликов: $clicks\nСила клика: $clickPower"
+        upgradeButton.text = "Улучшение ($upgradeCost)"
+        upgradeButton.isEnabled = clicks >= upgradeCost
     }
 }
